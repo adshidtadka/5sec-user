@@ -1,5 +1,6 @@
 $(function() {
   getEndTime();
+  startFadeOut();
   countDown();
 });
 
@@ -8,6 +9,10 @@ let endTime;
 const getEndTime = function() {
   endTime = new Date();
   endTime.setSeconds(endTime.getSeconds() + 5);
+};
+
+const startFadeOut = function() {
+  $("#timer").removeClass("show");
 };
 
 const countDown = function() {

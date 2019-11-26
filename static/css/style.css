@@ -198,9 +198,19 @@ header {
   justify-self: center;
 }
 
+.timer-box {
+  height: 300px;
+}
+
 #timer {
   color: #ff9226;
   font-size: 180px;
   text-align: center;
   font-family: "Ricty Diminished";
+  opacity: 0;
+  transition: 2s;
+}
+
+#timer.show {
+  opacity: 1;
 }
