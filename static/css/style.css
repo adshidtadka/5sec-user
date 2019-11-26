@@ -194,8 +194,9 @@ header {
     Container
 ========================================= */
 
-.start-btn {
-  justify-self: center;
+.play-btn-box {
+  height: 300px;
+  align-content: center;
 }
 
 .timer-box {

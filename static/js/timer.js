@@ -39,4 +39,5 @@ const startFadeOut = function() {
 const stop = function() {
   clearTimeout(timeOutId);
   $("#timer").addClass("show");
+  $(this).remove();
 };
