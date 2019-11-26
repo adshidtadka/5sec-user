@@ -2,17 +2,15 @@ $(function() {
   getEndTime();
   startFadeOut();
   countDown();
+  $(document).on("click", "#stop", stop);
 });
 
 let endTime;
+let timeOutId;
 
 const getEndTime = function() {
   endTime = new Date();
   endTime.setSeconds(endTime.getSeconds() + 5);
-};
-
-const startFadeOut = function() {
-  $("#timer").removeClass("show");
 };
 
 const countDown = function() {
@@ -24,7 +22,7 @@ const countDown = function() {
 
   if (diff > 0) {
     $("#timer").text(zeroPadding(sec, 2) + ":" + zeroPadding(ms, 2));
-    setTimeout(countDown, 10);
+    timeOutId = setTimeout(countDown, 10);
   } else {
     $("#timer").text("00:00");
   }
@@ -32,4 +30,13 @@ const countDown = function() {
 
 const zeroPadding = function(num, length) {
   return ("0000000" + num).slice(-length);
+};
+
+const startFadeOut = function() {
+  $("#timer").removeClass("show");
+};
+
+const stop = function() {
+  clearTimeout(timeOutId);
+  $("#timer").addClass("show");
 };
