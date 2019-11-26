@@ -197,3 +197,10 @@ header {
 .start-btn {
   justify-self: center;
 }
+
+#timer {
+  color: #ff9226;
+  font-size: 180px;
+  text-align: center;
+  font-family: "Ricty Diminished";
+}
