@@ -2,6 +2,7 @@ $(function() {
   $(document).on("click", "#action", action);
 });
 
+const INF = 999999;
 let endTime;
 let timeOutId;
 let clickNum = 0;
@@ -9,7 +10,6 @@ let clickNum = 0;
 const action = function() {
   $(this).data("click", ++clickNum);
   clickNum = $(this).data("click");
-  console.log(clickNum);
   if (clickNum == 1) {
     startTimer();
   } else if (clickNum == 2) {
@@ -54,12 +54,20 @@ const zeroPadding = function(num, length) {
 };
 
 const stopTimer = function(isOver) {
+  let result;
   if (isOver) {
     $("#timer").text("--:--");
+    result = INF;
   } else {
     clearTimeout(timeOutId);
+    const result_str = $("#timer").text();
+    result =
+      parseInt(result_str.substr(0, 2)) * 100 +
+      parseInt(result_str.substr(3, 2));
   }
 
   $("#timer").addClass("show");
   $("#action").remove();
+
+  console.log(result);
 };
