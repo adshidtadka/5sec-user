@@ -13,30 +13,25 @@ const action = function() {
   if (clickNum == 1) {
     startTimer();
   } else if (clickNum == 2) {
-    stopTimer();
+    stopTimer(false);
   }
 };
 
 const startTimer = function() {
-  getEndTime();
-  createStopBtn();
-  startFadeOut();
-  timer();
-};
-
-const getEndTime = function() {
+  // set endTime
   endTime = new Date();
   endTime.setSeconds(endTime.getSeconds() + 5);
-};
 
-const createStopBtn = function() {
+  // create stop button
   $("#action").text("Stop");
   $("#action").removeClass("btn-light");
   $("#action").addClass("btn-danger");
-};
 
-const startFadeOut = function() {
+  // start fadeout
   $("#timer").removeClass("show");
+
+  // start timer
+  timer();
 };
 
 const timer = function() {
@@ -50,9 +45,7 @@ const timer = function() {
     $("#timer").text(zeroPadding(sec, 2) + ":" + zeroPadding(ms, 2));
     timeOutId = setTimeout(timer, 10);
   } else {
-    $("#timer").addClass("show");
-    $("#timer").text("--:--");
-    $("#action").remove();
+    stopTimer(true);
   }
 };
 
@@ -60,8 +53,13 @@ const zeroPadding = function(num, length) {
   return ("0000000" + num).slice(-length);
 };
 
-const stopTimer = function() {
-  clearTimeout(timeOutId);
+const stopTimer = function(isOver) {
+  if (isOver) {
+    $("#timer").text("--:--");
+  } else {
+    clearTimeout(timeOutId);
+  }
+
   $("#timer").addClass("show");
   $("#action").remove();
 };
