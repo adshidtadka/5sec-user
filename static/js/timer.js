@@ -70,7 +70,7 @@ const stopTimer = function(isOver) {
   $("#action").remove();
 
   $.ajax({
-    url: "http://localhost:5001/result",
+    url: "http://localhost:5000/result",
     type: "POST",
     data: {
       userName: $("#user-name").text(),
