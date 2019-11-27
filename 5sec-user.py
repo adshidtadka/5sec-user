@@ -1,6 +1,7 @@
 import time
 import datetime
 from flask import Flask, render_template
+import configparser
 
 app = Flask(__name__)
 
@@ -13,4 +14,7 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    port = config["DEFAULT"]["port"]
+    app.run(debug=False, host='0.0.0.0', port=port)
