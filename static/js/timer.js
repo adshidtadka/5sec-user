@@ -69,5 +69,21 @@ const stopTimer = function(isOver) {
   $("#timer").addClass("show");
   $("#action").remove();
 
-  console.log(result);
+  $.ajax({
+    url: "http://localhost:5001/result",
+    type: "POST",
+    data: {
+      userName: $("#user-name").text(),
+      result: result
+    }
+  })
+    .done(data => {
+      $("#result").text(data);
+    })
+    .fail(data => {
+      $("#result").text(data);
+    })
+    .always(data => {
+      console.log(data);
+    });
 };
