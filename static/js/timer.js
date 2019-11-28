@@ -78,10 +78,24 @@ const stopTimer = function(isOver) {
     }
   })
     .done(data => {
-      $("#result").text(data["results"]);
+      $("#result-thead").append(
+        "<tr><th scope='col'>#</th><th scope='col'>user</th><th scope='col'>score</th></tr>"
+      );
+      let tbody;
+      data["results"].forEach((row, index) => {
+        tbody +=
+          "<tr><th scope='row'>" +
+          String(parseInt(index) + 1) +
+          "</th > <td>" +
+          row["user_name"] +
+          "</td><td>" +
+          row["score"] +
+          "</td></tr>";
+      });
+      $("#result-tbody").append(tbody);
     })
     .fail(() => {
-      $("#result").text("Fail");
+      $("#message").text("Fail");
     })
     .always(data => {
       console.log(data);
