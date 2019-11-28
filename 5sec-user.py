@@ -11,6 +11,7 @@ args = sys.argv
 
 DEBUG = False
 SERVER_NAME = "localhost:" + str(5000 + int(sys.argv[1]))
+user_name = "user " + sys.argv[1]
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -23,7 +24,7 @@ def favicon():
 
 @app.route('/')
 def index():
-    return render_template('index.html', title="5sec stopwatch", user_name="user " + sys.argv[1])
+    return render_template('index.html', user_name=user_name)
 
 
 if __name__ == '__main__':
