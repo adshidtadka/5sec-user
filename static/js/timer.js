@@ -54,14 +54,14 @@ const zeroPadding = function(num, length) {
 };
 
 const stopTimer = function(isOver) {
-  let result;
+  let score;
   if (isOver) {
     $("#timer").text("--:--");
-    result = INF;
+    score = INF;
   } else {
     clearTimeout(timeOutId);
     const result_str = $("#timer").text();
-    result =
+    score =
       parseInt(result_str.substr(0, 2)) * 100 +
       parseInt(result_str.substr(3, 2));
   }
@@ -74,7 +74,7 @@ const stopTimer = function(isOver) {
     type: "POST",
     data: {
       userName: $("#user-name").text(),
-      result: result
+      score: score
     }
   })
     .done(data => {
