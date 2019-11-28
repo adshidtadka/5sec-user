@@ -78,10 +78,10 @@ const stopTimer = function(isOver) {
     }
   })
     .done(data => {
-      $("#result").text(data);
+      $("#result").text(data["results"]);
     })
-    .fail(data => {
-      $("#result").text(data);
+    .fail(() => {
+      $("#result").text("Fail");
     })
     .always(data => {
       console.log(data);
