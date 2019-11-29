@@ -18,6 +18,12 @@ const action = function() {
     endTime = new Date(startTime.getTime());
     endTime = endTime.setSeconds(endTime.getSeconds() + COUNTDOWN + TIMER);
 
+    // create stop button
+    $("#action").text("Stop");
+    $("#action").removeClass("btn-light");
+    $("#action").addClass("btn-danger");
+    $("#action").prop("disabled", true);
+
     // start countdown
     countdown(COUNTDOWN);
   } else if (clickNum == 2) {
@@ -33,14 +39,10 @@ const countdown = function(num) {
   } else if (num == 0) {
     $("#countdown").text($("#countdown").text() + " START!");
 
-    // create stop button
-    $("#action").text("Stop");
-    $("#action").removeClass("btn-light");
-    $("#action").addClass("btn-danger");
-
     // start fadeout
     $("#timer").removeClass("show");
     $("#countdown").removeClass("show");
+    $("#action").prop("disabled", false);
 
     // start timer
     timer();
