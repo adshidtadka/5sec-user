@@ -22,8 +22,7 @@ const getPlayers = function(fetchedPlayers) {
     url: "http://localhost:5000/player",
     type: "GET",
     data: {
-      gameId: 2,
-      fetchedPlayers: fetchedPlayers
+      gameId: 2
     }
   }).done(data => {
     let tbody;
