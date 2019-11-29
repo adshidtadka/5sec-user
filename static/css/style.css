@@ -204,6 +204,8 @@ header {
   height: 20px;
   padding: 0;
   margin: 0;
+  opacity: 0;
+  transition: 2s;
 }
 
 #timer {
@@ -221,17 +223,25 @@ header {
   transition: 0s;
 }
 
-.message-box {
+#countdown.show {
+  opacity: 1;
+}
+
+#message {
   align-content: center;
 }
 
-.loading {
+#loading {
   background: url(../img/loading.gif) no-repeat left center;
   line-height: 50px;
   padding-left: 30px;
   height: 50px;
   color: #f8f9fa;
   text-align: center;
-  width: 180px;
+  width: 240px;
   margin: 0 auto;
+}
+
+.table-box {
+  margin-top: 20px;
 }

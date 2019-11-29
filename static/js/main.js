@@ -1,48 +1,56 @@
 $(function() {
-  $(document).on("click", "#action", action);
+  $("#stop").on("click", { isStop: true }, stopTimer);
+  startLoading();
 });
 
 const INF = 999999;
 const COUNTDOWN = 3;
 const TIMER = 5;
+const LOADING = 5;
 let startTime, endTime;
 let timeOutId;
 let clickNum = 0;
 
-const action = function() {
-  $(this).data("click", ++clickNum);
-  clickNum = $(this).data("click");
-  if (clickNum == 1) {
-    // set startTime and endTime
-    startTime = new Date();
-    endTime = new Date(startTime.getTime());
-    endTime = endTime.setSeconds(endTime.getSeconds() + COUNTDOWN + TIMER);
+const startLoading = function() {
+  $("#table-thead").append("<th scope='col'>user</th>");
+  loading(LOADING);
+};
 
-    // create stop button
-    $("#action").text("Stop");
-    $("#action").removeClass("btn-light");
-    $("#action").addClass("btn-danger");
-    $("#action").prop("disabled", true);
+const loading = function(sec) {
+  if (sec > 0) {
+    $("#loading").text("Recruiting participants..." + String(sec) + "s");
+    sec--;
+    setTimeout(loading, 1000, sec);
+  } else if (sec == 0) {
+    $("#loading").remove();
+    $("#table-thead").text("");
+    $("#table-tbody").text("");
 
-    // start countdown
-    countdown(COUNTDOWN);
-  } else if (clickNum == 2) {
-    stopTimer(false);
+    startCountDown();
   }
 };
 
-const countdown = function(num) {
-  if (num > 0) {
-    $("#countdown").text($("#countdown").text() + " " + String(num));
-    num--;
-    setTimeout(countdown, 1000, num);
-  } else if (num == 0) {
+const startCountDown = function() {
+  startTime = new Date();
+  endTime = new Date(startTime.getTime());
+  endTime = endTime.setSeconds(endTime.getSeconds() + COUNTDOWN + TIMER);
+
+  // start countdown
+  countdown(COUNTDOWN);
+};
+
+const countdown = function(sec) {
+  if (sec > 0) {
+    $("#countdown").text($("#countdown").text() + " " + String(sec));
+    sec--;
+    setTimeout(countdown, 1000, sec--);
+  } else if (sec == 0) {
     $("#countdown").text($("#countdown").text() + " START!");
 
     // start fadeout
     $("#timer").removeClass("show");
     $("#countdown").removeClass("show");
-    $("#action").prop("disabled", false);
+    $("#stop").prop("disabled", false);
 
     // start timer
     timer();
@@ -60,7 +68,7 @@ const timer = function() {
     $("#timer").text(zeroPadding(sec, 2) + ":" + zeroPadding(ms, 2));
     timeOutId = setTimeout(timer, 10);
   } else {
-    stopTimer(true);
+    stopTimer({ data: { isStop: false } });
   }
 };
 
@@ -68,21 +76,21 @@ const zeroPadding = function(num, length) {
   return ("0000000" + num).slice(-length);
 };
 
-const stopTimer = function(isOver) {
+const stopTimer = function(e) {
   let score;
-  if (isOver) {
-    $("#timer").text("--:--");
-    score = INF;
-  } else {
+  if (e.data.isStop) {
     clearTimeout(timeOutId);
     const result_str = $("#timer").text();
     score =
       parseInt(result_str.substr(0, 2)) * 100 +
       parseInt(result_str.substr(3, 2));
+  } else {
+    $("#timer").text("--:--");
+    score = INF;
   }
 
   $("#timer").addClass("show");
-  $("#action").remove();
+  $("#stop").remove();
 
   $.ajax({
     url: "http://localhost:5000/result",
@@ -93,7 +101,7 @@ const stopTimer = function(isOver) {
     }
   })
     .done(data => {
-      $("#result-thead").append(
+      $("#table-thead").append(
         "<tr><th scope='col'>#</th><th scope='col'>user</th><th scope='col'>score</th></tr>"
       );
       let tbody;
@@ -107,7 +115,7 @@ const stopTimer = function(isOver) {
           row["score"] +
           "</td></tr>";
       });
-      $("#result-tbody").append(tbody);
+      $("#table-tbody").append(tbody);
     })
     .fail(() => {
       $("#message").text("Fail");
