@@ -8,12 +8,37 @@ const COUNTDOWN = 3;
 const TIMER = 5;
 const LOADING = 5;
 let startTime, endTime;
-let timeOutId;
-let clickNum = 0;
+let timerTimeOut, getPlayersTimeOut;
+let fetchedPlayers = [];
 
 const startLoading = function() {
-  $("#table-thead").append("<th scope='col'>user</th>");
+  $("#table-thead").append("<th scope='col'>#</th><th scope='col'>user</th>");
   loading(LOADING);
+  getPlayers(fetchedPlayers);
+};
+
+const getPlayers = function(fetchedPlayers) {
+  $.ajax({
+    url: "http://localhost:5000/player",
+    type: "GET",
+    data: {
+      gameId: 2,
+      fetchedPlayers: fetchedPlayers
+    }
+  }).done(data => {
+    let tbody;
+    data["players"].forEach((row, index) => {
+      tbody +=
+        "<tr><th scope='row'>" +
+        String(parseInt(index) + 1) +
+        "</th><td>" +
+        row["user_name"] +
+        "</td></tr>";
+      fetchedPlayers.append(row["user_name"]);
+    });
+    $("#table-tbody").append(tbody);
+  });
+  getPlayersTimeOut = setTimeout(getPlayers, 200, fetchedPlayers);
 };
 
 const loading = function(sec) {
@@ -25,6 +50,8 @@ const loading = function(sec) {
     $("#loading").remove();
     $("#table-thead").text("");
     $("#table-tbody").text("");
+
+    clearTimeout(getPlayersTimeOut);
 
     startCountDown();
   }
@@ -66,7 +93,7 @@ const timer = function() {
 
   if (diff >= 0) {
     $("#timer").text(zeroPadding(sec, 2) + ":" + zeroPadding(ms, 2));
-    timeOutId = setTimeout(timer, 10);
+    timerTimeOut = setTimeout(timer, 10);
   } else {
     stopTimer({ data: { isStop: false } });
   }
@@ -79,7 +106,7 @@ const zeroPadding = function(num, length) {
 const stopTimer = function(e) {
   let score;
   if (e.data.isStop) {
-    clearTimeout(timeOutId);
+    clearTimeout(timerTimeOut);
     const result_str = $("#timer").text();
     score =
       parseInt(result_str.substr(0, 2)) * 100 +

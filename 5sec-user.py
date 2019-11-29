@@ -33,9 +33,8 @@ def index():
 def play():
     r = requests.post("http://localhost:5000/game")
     game = json.loads(r.text)["data"]["game"]
-    r = requests.post("http://localhost:5000/player", data={"user_name": user_name, "game_id": game["id"]})
-    player_num = json.loads(r.text)["data"]["player_num"]
-    return render_template('play.html', user_name=user_name, game=game, player_num=player_num)
+    requests.post("http://localhost:5000/player", data={"user_name": user_name, "game_id": game["id"]})
+    return render_template('play.html', user_name=user_name, game=game)
 
 
 if __name__ == '__main__':
