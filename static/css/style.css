@@ -195,17 +195,21 @@ header {
 ========================================= */
 
 .play-btn-box {
-  height: 300px;
-  align-content: center;
+  margin-top: 50px;
 }
 
-.timer-box {
-  height: 300px;
+#countdown {
+  color: #ff9226;
+  font-size: 20px;
+  height: 20px;
+  padding: 0;
+  margin: 0;
 }
 
 #timer {
   color: #ff9226;
   font-size: 180px;
+  line-height: 150px;
   text-align: center;
   font-family: "Ricty Diminished";
   opacity: 0;

@@ -3,7 +3,9 @@ $(function() {
 });
 
 const INF = 999999;
-let endTime;
+const COUNTDOWN = 3;
+const TIMER = 5;
+let startTime, endTime;
 let timeOutId;
 let clickNum = 0;
 
@@ -11,32 +13,43 @@ const action = function() {
   $(this).data("click", ++clickNum);
   clickNum = $(this).data("click");
   if (clickNum == 1) {
-    startTimer();
+    // set startTime and endTime
+    startTime = new Date();
+    endTime = new Date(startTime.getTime());
+    endTime = endTime.setSeconds(endTime.getSeconds() + COUNTDOWN + TIMER);
+
+    // start countdown
+    countdown(COUNTDOWN);
   } else if (clickNum == 2) {
     stopTimer(false);
   }
 };
 
-const startTimer = function() {
-  // set endTime
-  endTime = new Date();
-  endTime.setSeconds(endTime.getSeconds() + 5);
+const countdown = function(num) {
+  if (num > 0) {
+    $("#countdown").text($("#countdown").text() + " " + String(num));
+    num--;
+    setTimeout(countdown, 1000, num);
+  } else if (num == 0) {
+    $("#countdown").text($("#countdown").text() + " START!");
 
-  // create stop button
-  $("#action").text("Stop");
-  $("#action").removeClass("btn-light");
-  $("#action").addClass("btn-danger");
+    // create stop button
+    $("#action").text("Stop");
+    $("#action").removeClass("btn-light");
+    $("#action").addClass("btn-danger");
 
-  // start fadeout
-  $("#timer").removeClass("show");
+    // start fadeout
+    $("#timer").removeClass("show");
+    $("#countdown").removeClass("show");
 
-  // start timer
-  timer();
+    // start timer
+    timer();
+  }
 };
 
 const timer = function() {
-  const startTime = new Date();
-  const diff = endTime - startTime;
+  const nowTime = new Date();
+  const diff = endTime - nowTime;
   const times = 24 * 60 * 60 * 1000;
   const sec = (Math.floor((diff % times) / 1000) % 60) % 60;
   const ms = Math.floor((diff % times) / 10) % 100;
