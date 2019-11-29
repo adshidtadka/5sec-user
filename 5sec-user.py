@@ -4,6 +4,7 @@ from flask import Flask, render_template, send_from_directory
 import configparser
 import sys
 import os
+import requests
 
 args = sys.argv
 # config = configparser.ConfigParser()
@@ -29,7 +30,8 @@ def index():
 
 @app.route('/play')
 def play():
-    return render_template('play.html', user_name=user_name)
+    r = requests.post("http://localhost:5000/game", data={"user_name": user_name})
+    return render_template('play.html', user_name=user_name, game_id=r.text)
 
 
 if __name__ == '__main__':
