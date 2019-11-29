@@ -27,5 +27,10 @@ def index():
     return render_template('index.html', user_name=user_name)
 
 
+@app.route('/play')
+def play():
+    return render_template('play.html', user_name=user_name)
+
+
 if __name__ == '__main__':
     app.run()
