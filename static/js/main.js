@@ -42,13 +42,12 @@ const getPlayers = function(fetchedPlayers) {
 
 const loading = function(sec) {
   if (sec > 0) {
-    $("#loading").text("Recruiting participants..." + String(sec) + "s");
+    $("#message").text("Recruiting participants..." + String(sec) + "s");
     sec--;
     setTimeout(loading, 1000, sec);
   } else if (sec == 0) {
-    $("#loading").remove();
-    $("#table-thead").text("");
-    $("#table-tbody").text("");
+    $("#message").text("");
+    $("#message").removeClass("loading");
 
     clearTimeout(getPlayersTimeOut);
 
@@ -117,6 +116,8 @@ const stopTimer = function(e) {
 
   $("#timer").addClass("show");
   $("#stop").remove();
+  $("#table-thead").text("");
+  $("#table-tbody").text("");
 
   $.ajax({
     url: "http://localhost:5000/result",

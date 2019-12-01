@@ -227,12 +227,11 @@ header {
   opacity: 1;
 }
 
-#message {
+#message-box {
   align-content: center;
 }
 
-#loading {
-  background: url(../img/loading.gif) no-repeat left center;
+#message {
   line-height: 50px;
   padding-left: 30px;
   height: 50px;
@@ -240,6 +239,10 @@ header {
   text-align: center;
   width: 240px;
   margin: 0 auto;
+}
+
+.loading {
+  background: url(../img/loading.gif) no-repeat left center;
 }
 
 .table-box {
