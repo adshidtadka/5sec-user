@@ -27,13 +27,15 @@ const getPlayers = function(fetchedPlayers) {
   }).done(res => {
     let tbody;
     res.players.forEach((row, index) => {
-      tbody +=
-        "<tr><th scope='row'>" +
-        String(parseInt(index) + 1) +
-        "</th><td>" +
-        row["user_name"] +
-        "</td></tr>";
-      fetchedPlayers.push(row["user_name"]);
+      if (fetchedPlayers.includes(row["user_name"]) == false) {
+        tbody +=
+          "<tr><th scope='row'>" +
+          String(parseInt(index) + 1) +
+          "</th><td>" +
+          row["user_name"] +
+          "</td></tr>";
+        fetchedPlayers.push(row["user_name"]);
+      }
     });
     $("#table-tbody").append(tbody);
   });
@@ -120,10 +122,11 @@ const stopTimer = function(e) {
   $("#table-tbody").text("");
 
   $.ajax({
-    url: "http://localhost:5000/result",
-    type: "POST",
+    url: "http://localhost:5000/players",
+    type: "UPDATE",
     data: {
       userName: $("#user-name").text(),
+      gameId: $("#game-id").text(),
       score: score
     }
   })
