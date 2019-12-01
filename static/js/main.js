@@ -24,16 +24,16 @@ const getPlayers = function(fetchedPlayers) {
     data: {
       gameId: 2
     }
-  }).done(data => {
+  }).done(res => {
     let tbody;
-    data["players"].forEach((row, index) => {
+    res.players.forEach((row, index) => {
       tbody +=
         "<tr><th scope='row'>" +
         String(parseInt(index) + 1) +
         "</th><td>" +
         row["user_name"] +
         "</td></tr>";
-      fetchedPlayers.append(row["user_name"]);
+      fetchedPlayers.push(row["user_name"]);
     });
     $("#table-tbody").append(tbody);
   });
