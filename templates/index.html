@@ -5,17 +5,18 @@
 
 <div class="container">
   <div class="row justify-content-center">
-    <div class="timer-box col-10">
+    <div class="timer-box col-6">
+      <div id="countdown" class="show"></div>
       <div id="timer" class="show">05:00</div>
     </div>
   </div>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center play-btn-box">
     <div class="col-4">
-      <button id="action" type="button" class="btn btn-lg btn-light btn-block">Play</button>
+      <a href="/play">
+        <button id="action" type="button" class="btn btn-lg btn-light btn-block">Play</button>
+      </a>
     </div>
-  </div><!-- /row -->
+  </div>
 </div><!-- /container -->
-
-<script src="/static/js/timer.js"></script>
 
 {% endblock content %}

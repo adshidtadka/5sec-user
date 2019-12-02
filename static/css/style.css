@@ -195,17 +195,23 @@ header {
 ========================================= */
 
 .play-btn-box {
-  height: 300px;
-  align-content: center;
+  margin-top: 50px;
 }
 
-.timer-box {
-  height: 300px;
+#countdown {
+  color: #ff9226;
+  font-size: 20px;
+  height: 20px;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  transition: 2s;
 }
 
 #timer {
   color: #ff9226;
   font-size: 180px;
+  line-height: 150px;
   text-align: center;
   font-family: "Ricty Diminished";
   opacity: 0;
@@ -215,4 +221,30 @@ header {
 #timer.show {
   opacity: 1;
   transition: 0s;
+}
+
+#countdown.show {
+  opacity: 1;
+}
+
+#message-box {
+  align-content: center;
+}
+
+#message {
+  line-height: 50px;
+  padding-left: 30px;
+  height: 50px;
+  color: #f8f9fa;
+  text-align: center;
+  width: 240px;
+  margin: 0 auto;
+}
+
+.loading {
+  background: url(../img/loading.gif) no-repeat left center;
+}
+
+.table-box {
+  margin-top: 20px;
 }
