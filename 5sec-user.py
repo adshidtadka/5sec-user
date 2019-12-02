@@ -33,7 +33,7 @@ def index():
 def play():
     r = requests.post("http://localhost:5000/game")
     game = json.loads(r.text)["game"]
-    requests.post("http://localhost:5000/player", data={"user_name": user_name, "game_id": game["id"]})
+    r = requests.post("http://localhost:5000/player", data={"user_name": user_name, "game_id": game["id"]})
     return render_template('play.html', user_name=user_name, game=game)
 
 
