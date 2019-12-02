@@ -122,11 +122,11 @@ const stopTimer = function(e) {
   $("#table-tbody").text("");
 
   $.ajax({
-    url: "http://localhost:5000/players",
-    type: "UPDATE",
+    url: "http://localhost:5000/result",
+    type: "POST",
     data: {
       userName: $("#user-name").text(),
-      gameId: $("#game-id").text(),
+      gameId: $("#value-game-id").text(),
       score: score
     }
   })
@@ -135,7 +135,7 @@ const stopTimer = function(e) {
         "<tr><th scope='col'>#</th><th scope='col'>user</th><th scope='col'>score</th></tr>"
       );
       let tbody;
-      data["results"].forEach((row, index) => {
+      data["players"].forEach((row, index) => {
         tbody +=
           "<tr><th scope='row'>" +
           String(parseInt(index) + 1) +
