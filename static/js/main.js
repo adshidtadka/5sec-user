@@ -113,10 +113,9 @@ const stopTimer = function(e) {
   let score;
   if (e.data.isStop) {
     clearTimeout(timerTimeOut);
-    const result_str = $("#timer").text();
+    const score_str = $("#timer").text();
     score =
-      parseInt(result_str.substr(0, 2)) * 100 +
-      parseInt(result_str.substr(3, 2));
+      parseInt(score_str.substr(0, 2)) * 100 + parseInt(score_str.substr(3, 2));
   } else {
     $("#timer").text("--:--");
     score = INF;
@@ -127,6 +126,10 @@ const stopTimer = function(e) {
   $("#table-thead").text("");
   $("#table-tbody").text("");
 
+  postScore(score);
+};
+
+const postScore = function(score) {
   $.ajax({
     url: "http://localhost:5000/result",
     type: "POST",
@@ -135,30 +138,34 @@ const stopTimer = function(e) {
       gameId: gameId,
       score: score
     }
-  })
-    .done(data => {
-      $("#table-thead").append(
-        "<tr><th scope='col'>#</th><th scope='col'>user</th><th scope='col'>score</th></tr>"
-      );
-      let tbody;
-      data["players"].forEach((row, index) => {
-        tbody +=
-          "<tr><th scope='row'>" +
-          String(parseInt(index) + 1) +
-          "</th > <td>" +
-          row["user_name"] +
-          "</td><td>" +
-          row["score"] +
-          "</td></tr>";
-      });
-      $("#table-tbody").append(tbody);
-    })
-    .fail(() => {
-      $("#message").text("Fail");
-    })
-    .always(data => {
-      console.log(data);
+  });
+  getResults();
+};
+
+const getResults = function() {
+  $.ajax({
+    url: "http://localhost:5000/result",
+    type: "GET",
+    data: {
+      gameId: gameId
+    }
+  }).done(data => {
+    $("#table-thead").append(
+      "<tr><th scope='col'>#</th><th scope='col'>user</th><th scope='col'>score</th></tr>"
+    );
+    let tbody;
+    data["players"].forEach((row, index) => {
+      tbody +=
+        "<tr><th scope='row'>" +
+        String(parseInt(index) + 1) +
+        "</th > <td>" +
+        row["user_name"] +
+        "</td><td>" +
+        row["score"] +
+        "</td></tr>";
     });
+    $("#table-tbody").append(tbody);
+  });
 };
 
 const zeroPadding = function(num, length) {
