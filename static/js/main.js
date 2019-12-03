@@ -1,10 +1,9 @@
 const INF = 999999;
 const COUNTDOWN = 3;
 const TIMER = 5;
-const LOADING = 5;
 const userName = $("#user-name").text();
 let gameId;
-let startTime, endTime;
+let endLoadingTime, endTimerTime;
 let timerTimeOut, getPlayersTimeOut;
 let fetchedPlayers = [];
 
@@ -18,7 +17,7 @@ const createGame = function() {
     url: "http://localhost:5000/game",
     type: "POST"
   }).done(res => {
-    endTime = new Date(res.game.start_time);
+    endLoadingTime = new Date(res.game.start_time);
     gameId = res.game.id;
     $.ajax({
       url: "http://localhost:5000/player",
@@ -37,8 +36,10 @@ const startLoading = function() {
   const x = gaussian(0.5, 0.5)();
   console.log(x);
   console.log($("#value-is-auto").text());
+
   $("#table-thead").append("<th scope='col'>#</th><th scope='col'>user</th>");
-  loading(LOADING);
+
+  loading();
   getPlayers(fetchedPlayers);
 };
 
@@ -67,27 +68,22 @@ const getPlayers = function(fetchedPlayers) {
   getPlayersTimeOut = setTimeout(getPlayers, 200, fetchedPlayers);
 };
 
-const loading = function(sec) {
-  if (sec > 0) {
+const loading = function() {
+  const nowTime = new Date();
+  const diff = endLoadingTime - nowTime;
+  const times = 24 * 60 * 60 * 1000;
+  const sec = (Math.ceil((diff % times) / 1000) % 60) % 60;
+  if (diff > 0) {
     $("#message").text("Recruiting participants..." + String(sec) + "s");
-    sec--;
-    setTimeout(loading, 1000, sec);
-  } else if (sec == 0) {
+    setTimeout(loading, 1000);
+  } else {
     $("#message").text("");
     $("#message").removeClass("loading");
 
     clearTimeout(getPlayersTimeOut);
 
-    startCountDown();
+    countdown(COUNTDOWN);
   }
-};
-
-const startCountDown = function() {
-  startTime = new Date();
-  endTime = endTime.setSeconds(endTime.getSeconds() + COUNTDOWN + TIMER);
-
-  // start countdown
-  countdown(COUNTDOWN);
 };
 
 const countdown = function(sec) {
@@ -104,13 +100,15 @@ const countdown = function(sec) {
     $("#stop").prop("disabled", false);
 
     // start timer
+    const nowTime = new Date();
+    endTimerTime = nowTime.setSeconds(nowTime.getSeconds() + TIMER);
     timer();
   }
 };
 
 const timer = function() {
   const nowTime = new Date();
-  const diff = endTime - nowTime;
+  const diff = endTimerTime - nowTime;
   const times = 24 * 60 * 60 * 1000;
   const sec = (Math.floor((diff % times) / 1000) % 60) % 60;
   const ms = Math.floor((diff % times) / 10) % 100;
