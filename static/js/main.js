@@ -41,7 +41,7 @@ const joinGame = function() {
 };
 
 const generateRandomScore = function() {
-  const randomTime = Math.round(gaussian(0.5, 0.5)() * 1000);
+  const randomTime = gaussian(50, 50)();
   const intervalTime =
     getRemainTime(endLoadingTime).time +
     (COUNTDOWN + TIMER) * 1000 -
