@@ -11,6 +11,12 @@ let fetchedPlayers;
 $(function() {
   if ($("#value-is-auto").text() == "True") {
     isAuto = true;
+
+    $("#stop").text("Auto Play");
+    $("#table-thead").remove();
+    $("#table-tbody").remove();
+    $("#message").text("Searching game...");
+
     joinGame();
   } else {
     isAuto = false;
