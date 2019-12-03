@@ -63,12 +63,11 @@ const getPlayers = function() {
 };
 
 const loading = function() {
-  const nowTime = new Date();
-  const diff = endLoadingTime - nowTime;
-  const times = 24 * 60 * 60 * 1000;
-  const sec = (Math.ceil((diff % times) / 1000) % 60) % 60;
-  if (diff > 0) {
-    $("#message").text("Recruiting participants..." + String(sec) + "s");
+  const remainTime = getRemainTime(endLoadingTime);
+  if (remainTime.time >= 0) {
+    $("#message").text(
+      "Recruiting participants..." + String(remainTime.sec) + "s"
+    );
     setTimeout(loading, 1000);
   } else {
     $("#message").text("");
@@ -87,13 +86,10 @@ const countdown = function(sec) {
     setTimeout(countdown, 1000, sec--);
   } else if (sec == 0) {
     $("#countdown").text($("#countdown").text() + " START!");
-
-    // start fadeout
     $("#timer").removeClass("show");
     $("#countdown").removeClass("show");
     $("#stop").prop("disabled", false);
 
-    // start timer
     const nowTime = new Date();
     endTimerTime = nowTime.setSeconds(nowTime.getSeconds() + TIMER);
     timer();
@@ -101,22 +97,16 @@ const countdown = function(sec) {
 };
 
 const timer = function() {
-  const nowTime = new Date();
-  const diff = endTimerTime - nowTime;
-  const times = 24 * 60 * 60 * 1000;
-  const sec = (Math.floor((diff % times) / 1000) % 60) % 60;
-  const ms = Math.floor((diff % times) / 10) % 100;
+  const remainTime = getRemainTime(endTimerTime);
 
-  if (diff >= 0) {
-    $("#timer").text(zeroPadding(sec, 2) + ":" + zeroPadding(ms, 2));
+  if (remainTime.time >= 0) {
+    $("#timer").text(
+      zeroPadding(remainTime.sec, 2) + ":" + zeroPadding(remainTime.ms, 2)
+    );
     timerTimeOut = setTimeout(timer, 10);
   } else {
     stopTimer({ data: { isStop: false } });
   }
-};
-
-const zeroPadding = function(num, length) {
-  return ("0000000" + num).slice(-length);
 };
 
 const stopTimer = function(e) {
@@ -171,7 +161,10 @@ const stopTimer = function(e) {
     });
 };
 
-// returns a gaussian random function with the given mean and stdev.
+const zeroPadding = function(num, length) {
+  return ("0000000" + num).slice(-length);
+};
+
 const gaussian = function(mean, stdev) {
   var y2;
   var use_last = false;
@@ -195,4 +188,13 @@ const gaussian = function(mean, stdev) {
 
     return mean + stdev * y1;
   };
+};
+
+const getRemainTime = function(endTime) {
+  const nowTime = new Date();
+  const diff = endTime - nowTime;
+  const times = 24 * 60 * 60 * 1000;
+  const sec = (Math.floor((diff % times) / 1000) % 60) % 60;
+  const ms = Math.floor((diff % times) / 10) % 100;
+  return { time: diff, sec: sec, ms: ms };
 };
