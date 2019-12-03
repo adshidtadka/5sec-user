@@ -138,8 +138,9 @@ const postScore = function(score) {
       gameId: gameId,
       score: score
     }
+  }).done(() => {
+    getResults();
   });
-  getResults();
 };
 
 const getResults = function() {
@@ -161,11 +162,18 @@ const getResults = function() {
         "</th > <td>" +
         row["user_name"] +
         "</td><td>" +
-        row["score"] +
+        parseScore(row["score"]) +
         "</td></tr>";
     });
     $("#table-tbody").append(tbody);
   });
+};
+
+const parseScore = function(score) {
+  if (score == INF) return "--:--";
+  const sec_str = zeroPadding(Math.floor(score / 100), 2);
+  const ms_str = zeroPadding(score % 100, 2);
+  return sec_str + ":" + ms_str;
 };
 
 const zeroPadding = function(num, length) {
