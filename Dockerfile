@@ -1,12 +1,13 @@
 FROM ubuntu:latest
 
 RUN apt-get update
-RUN apt-get install python3 python3-pip git -y
+RUN apt-get install python3 python3-pip curl -y
 
-RUN pip3 install flask
+RUN pip3 install flask configparser requests
 
-RUN git clone https://github.com/adshidtadka/5sec-user
+RUN mkdir /app
+COPY . /app
 
-EXPOSE 5000
+EXPOSE 5001
 
-CMD [ "python3", "5sec-user/5sec-user.py" ]
+CMD python3 /app/5sec-user.py 1
