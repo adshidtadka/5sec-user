@@ -47,11 +47,7 @@ const generateRandomScore = function() {
     (COUNTDOWN + TIMER) * 1000 -
     randomTime * 10;
   let randomScore;
-  if (randomTime == 0) {
-    randomScore = INF;
-  } else {
-    randomScore = randomTime;
-  }
+  randomScore = randomTime == 0 ? INF : randomTime;
   setTimeout(postScore, intervalTime, randomScore);
 };
 
@@ -273,11 +269,7 @@ const gaussian = function(mean, stdev) {
     }
 
     const val = mean + stdev * y1;
-    if (val >= 0) {
-      return val;
-    } else {
-      return 0;
-    }
+    return val >= 0 ? val : 0;
   };
 };
 
