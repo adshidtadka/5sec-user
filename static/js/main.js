@@ -2,15 +2,51 @@ const INF = 999999;
 const COUNTDOWN = 3;
 const TIMER = 5;
 const userName = $("#user-name").text();
+let isAuto;
 let gameId;
 let endLoadingTime, endTimerTime;
 let timerTimeOut, getPlayersTimeOut;
-let fetchedPlayers = [];
+let fetchedPlayers;
 
 $(function() {
-  $("#stop").on("click", { isStop: true }, stopTimer);
-  createGame();
+  if ($("#value-is-auto").text() == "True") {
+    isAuto = true;
+    joinGame();
+  } else {
+    isAuto = false;
+    $("#stop").on("click", { isStop: true }, stopTimer);
+    createGame();
+  }
 });
+
+const joinGame = function() {
+  $.ajax({
+    url: "http://localhost:5000/game",
+    type: "GET"
+  }).done(res => {
+    if (res.game.id == null) {
+      setTimeout(joinGame, 1000);
+    } else {
+      gameId = res.game.id;
+      endLoadingTime = new Date(res.game.start_time);
+      createPlayer();
+    }
+  });
+};
+
+const generateRandomScore = function() {
+  const randomTime = gaussian(0.5, 0.5)();
+  const intervalTime =
+    getRemainTime(endLoadingTime).time +
+    (COUNTDOWN + TIMER - randomTime) * 1000;
+  let randomScore;
+  if (randomTime == 0) {
+    randomScore = INF;
+  } else {
+    randomScore = randomTime;
+  }
+  setTimeout(postScore, intervalTime, randomScore);
+};
 
 const createGame = function() {
   $.ajax({
@@ -32,8 +68,13 @@ const createPlayer = function() {
       gameId: gameId
     }
   }).done(() => {
-    loading();
-    getPlayers();
+    if (isAuto == true) {
+      generateRandomScore();
+    } else {
+      loading();
+      fetchedPlayers = [];
+      getPlayers();
+    }
   });
 };
 
@@ -129,6 +170,20 @@ const stopTimer = function(e) {
   postScore(score);
 };
 
+const postRandomScore = function() {
+  $.ajax({
+    url: "http://localhost:5000/result",
+    type: "POST",
+    data: {
+      userName: userName,
+      gameId: gameId,
+      score: randomScore
+    }
+  }).done(() => {
+    joinGame();
+  });
+};
+
 const postScore = function(score) {
   $.ajax({
     url: "http://localhost:5000/result",
@@ -139,7 +194,14 @@ const postScore = function(score) {
       score: score
     }
   }).done(() => {
-    getResults();
+    if (isAuto == true) {
+      joinGame();
+    } else {
+      $("#table-thead").append(
+        "<tr><th scope='col'>#</th><th scope='col'>user</th><th scope='col'>score</th></tr>"
+      );
+      getResults();
+    }
   });
 };
 
@@ -151,9 +213,6 @@ const getResults = function() {
       gameId: gameId
     }
   }).done(data => {
-    $("#table-thead").append(
-      "<tr><th scope='col'>#</th><th scope='col'>user</th><th scope='col'>score</th></tr>"
-    );
     let tbody;
     data["players"].forEach((row, index) => {
       tbody +=
@@ -165,7 +224,12 @@ const getResults = function() {
         parseScore(row["score"]) +
         "</td></tr>";
     });
+    $("#table-tbody").text("");
     $("#table-tbody").append(tbody);
+
+    if (data["players"].length() < fetchedPlayers.length()) {
+      setTimeout(getResults, 1000);
+    }
   });
 };
 
@@ -183,7 +247,7 @@ const zeroPadding = function(num, length) {
 const gaussian = function(mean, stdev) {
   var y2;
   var use_last = false;
-  return function() {
+  return () => {
     var y1;
     if (use_last) {
       y1 = y2;
@@ -201,7 +265,12 @@ const gaussian = function(mean, stdev) {
       use_last = true;
     }
 
-    return mean + stdev * y1;
+    const val = mean + stdev * y1;
+    if (val >= 0) {
+      return val;
+    } else {
+      return 0;
+    }
   };
 };
 
