@@ -17,18 +17,22 @@ const createGame = function() {
     url: "http://localhost:5000/game",
     type: "POST"
   }).done(res => {
-    endLoadingTime = new Date(res.game.start_time);
-    gameId = res.game.id;
-    $.ajax({
-      url: "http://localhost:5000/player",
-      type: "POST",
-      data: {
-        userName: userName,
-        gameId: res.game.id
-      }
-    }).done(() => {
-      startLoading();
-    });
+    createPlayer(res.game);
+  });
+};
+
+const createPlayer = function(game) {
+  endLoadingTime = new Date(game.start_time);
+  gameId = game.id;
+  $.ajax({
+    url: "http://localhost:5000/player",
+    type: "POST",
+    data: {
+      userName: userName,
+      gameId: gameId
+    }
+  }).done(() => {
+    startLoading();
   });
 };
 
