@@ -46,8 +46,6 @@ const generateRandomScore = function() {
     getRemainTime(endLoadingTime).time +
     (COUNTDOWN + TIMER) * 1000 -
     randomTime * 10;
-  console.log(intervalTime);
-  console.log(randomTime);
   let randomScore;
   if (randomTime == 0) {
     randomScore = INF;
