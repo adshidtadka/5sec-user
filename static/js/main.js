@@ -17,13 +17,13 @@ const createGame = function() {
     url: "http://localhost:5000/game",
     type: "POST"
   }).done(res => {
-    createPlayer(res.game);
+    endLoadingTime = new Date(res.game.start_time);
+    gameId = res.game.id;
+    createPlayer();
   });
 };
 
-const createPlayer = function(game) {
-  endLoadingTime = new Date(game.start_time);
-  gameId = game.id;
+const createPlayer = function() {
   $.ajax({
     url: "http://localhost:5000/player",
     type: "POST",
@@ -32,22 +32,12 @@ const createPlayer = function(game) {
       gameId: gameId
     }
   }).done(() => {
-    startLoading();
+    loading();
+    getPlayers();
   });
 };
 
-const startLoading = function() {
-  const x = gaussian(0.5, 0.5)();
-  console.log(x);
-  console.log($("#value-is-auto").text());
-
-  $("#table-thead").append("<th scope='col'>#</th><th scope='col'>user</th>");
-
-  loading();
-  getPlayers(fetchedPlayers);
-};
-
-const getPlayers = function(fetchedPlayers) {
+const getPlayers = function() {
   $.ajax({
     url: "http://localhost:5000/player",
     type: "GET",
@@ -69,7 +59,7 @@ const getPlayers = function(fetchedPlayers) {
     });
     $("#table-tbody").append(tbody);
   });
-  getPlayersTimeOut = setTimeout(getPlayers, 200, fetchedPlayers);
+  getPlayersTimeOut = setTimeout(getPlayers, 200);
 };
 
 const loading = function() {
