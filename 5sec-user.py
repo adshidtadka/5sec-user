@@ -12,7 +12,7 @@ args = sys.argv
 # config.read("config.ini")
 
 DEBUG = False
-SERVER_NAME = "0.0.0.0:" + str(5000 + int(sys.argv[1]))
+SERVER_NAME = "localhost:" + str(5000 + int(sys.argv[1]))
 user_name = "user " + sys.argv[1]
 
 app = Flask(__name__)
