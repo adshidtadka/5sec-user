@@ -35,10 +35,11 @@ const joinGame = function() {
 };
 
 const generateRandomScore = function() {
-  const randomTime = gaussian(0.5, 0.5)();
+  const randomTime = Math.round(gaussian(0.5, 0.5)() * 1000);
   const intervalTime =
     getRemainTime(endLoadingTime).time +
-    (COUNTDOWN + TIMER - randomTime) * 1000;
+    (COUNTDOWN + TIMER) * 1000 -
+    randomTime;
   let randomScore;
   if (randomTime == 0) {
     randomScore = INF;
@@ -227,7 +228,7 @@ const getResults = function() {
     $("#table-tbody").text("");
     $("#table-tbody").append(tbody);
 
-    if (data["players"].length() < fetchedPlayers.length()) {
+    if (data["players"].length < fetchedPlayers.length) {
       setTimeout(getResults, 1000);
     }
   });
