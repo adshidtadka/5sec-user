@@ -1,19 +1,42 @@
-$(function() {
-  $("#stop").on("click", { isStop: true }, stopTimer);
-  startLoading();
-});
-
 const INF = 999999;
 const COUNTDOWN = 3;
 const TIMER = 5;
 const LOADING = 5;
+const userName = $("#user-name").text();
+let gameId;
 let startTime, endTime;
 let timerTimeOut, getPlayersTimeOut;
 let fetchedPlayers = [];
 
+$(function() {
+  $("#stop").on("click", { isStop: true }, stopTimer);
+  createGame();
+});
+
+const createGame = function() {
+  $.ajax({
+    url: "http://localhost:5000/game",
+    type: "POST"
+  }).done(res => {
+    endTime = new Date(res.game.start_time);
+    gameId = res.game.id;
+    $.ajax({
+      url: "http://localhost:5000/player",
+      type: "POST",
+      data: {
+        userName: userName,
+        gameId: res.game.id
+      }
+    }).done(() => {
+      startLoading();
+    });
+  });
+};
+
 const startLoading = function() {
   const x = gaussian(0.5, 0.5)();
   console.log(x);
+  console.log($("#value-is-auto").text());
   $("#table-thead").append("<th scope='col'>#</th><th scope='col'>user</th>");
   loading(LOADING);
   getPlayers(fetchedPlayers);
@@ -24,7 +47,7 @@ const getPlayers = function(fetchedPlayers) {
     url: "http://localhost:5000/player",
     type: "GET",
     data: {
-      gameId: 2
+      gameId: gameId
     }
   }).done(res => {
     let tbody;
@@ -61,7 +84,6 @@ const loading = function(sec) {
 
 const startCountDown = function() {
   startTime = new Date();
-  endTime = new Date(startTime.getTime());
   endTime = endTime.setSeconds(endTime.getSeconds() + COUNTDOWN + TIMER);
 
   // start countdown
@@ -127,8 +149,8 @@ const stopTimer = function(e) {
     url: "http://localhost:5000/result",
     type: "POST",
     data: {
-      userName: $("#user-name").text(),
-      gameId: $("#value-game-id").text(),
+      userName: userName,
+      gameId: gameId,
       score: score
     }
   })
