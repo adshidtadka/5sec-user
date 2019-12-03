@@ -31,10 +31,12 @@ def index():
 
 @app.route('/play')
 def play():
-    r = requests.post("http://localhost:5000/game")
-    game = json.loads(r.text)["game"]
-    r = requests.post("http://localhost:5000/player", data={"user_name": user_name, "game_id": game["id"]})
-    return render_template('play.html', user_name=user_name, game=game)
+    return render_template('play.html', user_name=user_name, is_auto=False)
+
+
+@app.route("/autoplay")
+def auto_play():
+    return render_template('play.html', user_name=user_name,  is_auto=True)
 
 
 if __name__ == '__main__':

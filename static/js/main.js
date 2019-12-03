@@ -1,28 +1,96 @@
-$(function() {
-  $("#stop").on("click", { isStop: true }, stopTimer);
-  startLoading();
-});
-
 const INF = 999999;
 const COUNTDOWN = 3;
 const TIMER = 5;
-const LOADING = 5;
-let startTime, endTime;
+const userName = $("#user-name").text();
+let isAuto;
+let gameId;
+let endLoadingTime, endTimerTime;
 let timerTimeOut, getPlayersTimeOut;
-let fetchedPlayers = [];
+let fetchedPlayers;
 
-const startLoading = function() {
-  $("#table-thead").append("<th scope='col'>#</th><th scope='col'>user</th>");
-  loading(LOADING);
-  getPlayers(fetchedPlayers);
+$(function() {
+  if ($("#value-is-auto").text() == "True") {
+    isAuto = true;
+
+    $("#stop").text("Auto Play");
+    $("#table-thead").remove();
+    $("#table-tbody").remove();
+    $("#message").text("Searching game...");
+
+    joinGame();
+  } else {
+    isAuto = false;
+    $("#stop").on("click", { isStop: true }, stopTimer);
+    createGame();
+  }
+});
+
+const joinGame = function() {
+  $.ajax({
+    url: "http://localhost:5000/game",
+    type: "GET"
+  }).done(res => {
+    if (res.game.id == null) {
+      setTimeout(joinGame, 1000);
+    } else {
+      gameId = res.game.id;
+      endLoadingTime = new Date(res.game.start_time);
+      createPlayer();
+    }
+  });
 };
 
-const getPlayers = function(fetchedPlayers) {
+const generateRandomScore = function() {
+  const randomTime = Math.round(gaussian(50, 50)());
+  const intervalTime =
+    getRemainTime(endLoadingTime).time +
+    (COUNTDOWN + TIMER) * 1000 -
+    randomTime * 10;
+  let randomScore;
+  if (randomTime == 0) {
+    randomScore = INF;
+  } else {
+    randomScore = randomTime;
+  }
+  setTimeout(postScore, intervalTime, randomScore);
+};
+
+const createGame = function() {
+  $.ajax({
+    url: "http://localhost:5000/game",
+    type: "POST"
+  }).done(res => {
+    endLoadingTime = new Date(res.game.start_time);
+    gameId = res.game.id;
+    createPlayer();
+  });
+};
+
+const createPlayer = function() {
+  $.ajax({
+    url: "http://localhost:5000/player",
+    type: "POST",
+    data: {
+      userName: userName,
+      gameId: gameId
+    }
+  }).done(() => {
+    if (isAuto == true) {
+      generateRandomScore();
+    } else {
+      loading();
+      fetchedPlayers = [];
+      getPlayers();
+    }
+  });
+};
+
+const getPlayers = function() {
   $.ajax({
     url: "http://localhost:5000/player",
     type: "GET",
     data: {
-      gameId: 2
+      gameId: gameId
     }
   }).done(res => {
     let tbody;
@@ -39,31 +107,24 @@ const getPlayers = function(fetchedPlayers) {
     });
     $("#table-tbody").append(tbody);
   });
-  getPlayersTimeOut = setTimeout(getPlayers, 200, fetchedPlayers);
+  getPlayersTimeOut = setTimeout(getPlayers, 200);
 };
 
-const loading = function(sec) {
-  if (sec > 0) {
-    $("#message").text("Recruiting participants..." + String(sec) + "s");
-    sec--;
-    setTimeout(loading, 1000, sec);
-  } else if (sec == 0) {
+const loading = function() {
+  const remainTime = getRemainTime(endLoadingTime);
+  if (remainTime.time >= 0) {
+    $("#message").text(
+      "Recruiting participants..." + String(remainTime.sec) + "s"
+    );
+    setTimeout(loading, 1000);
+  } else {
     $("#message").text("");
     $("#message").removeClass("loading");
 
     clearTimeout(getPlayersTimeOut);
 
-    startCountDown();
+    countdown(COUNTDOWN);
   }
-};
-
-const startCountDown = function() {
-  startTime = new Date();
-  endTime = new Date(startTime.getTime());
-  endTime = endTime.setSeconds(endTime.getSeconds() + COUNTDOWN + TIMER);
-
-  // start countdown
-  countdown(COUNTDOWN);
 };
 
 const countdown = function(sec) {
@@ -73,44 +134,36 @@ const countdown = function(sec) {
     setTimeout(countdown, 1000, sec--);
   } else if (sec == 0) {
     $("#countdown").text($("#countdown").text() + " START!");
-
-    // start fadeout
     $("#timer").removeClass("show");
     $("#countdown").removeClass("show");
     $("#stop").prop("disabled", false);
 
-    // start timer
+    const nowTime = new Date();
+    endTimerTime = nowTime.setSeconds(nowTime.getSeconds() + TIMER);
     timer();
   }
 };
 
 const timer = function() {
-  const nowTime = new Date();
-  const diff = endTime - nowTime;
-  const times = 24 * 60 * 60 * 1000;
-  const sec = (Math.floor((diff % times) / 1000) % 60) % 60;
-  const ms = Math.floor((diff % times) / 10) % 100;
+  const remainTime = getRemainTime(endTimerTime);
 
-  if (diff >= 0) {
-    $("#timer").text(zeroPadding(sec, 2) + ":" + zeroPadding(ms, 2));
+  if (remainTime.time >= 0) {
+    $("#timer").text(
+      zeroPadding(remainTime.sec, 2) + ":" + zeroPadding(remainTime.ms, 2)
+    );
     timerTimeOut = setTimeout(timer, 10);
   } else {
     stopTimer({ data: { isStop: false } });
   }
 };
 
-const zeroPadding = function(num, length) {
-  return ("0000000" + num).slice(-length);
-};
-
 const stopTimer = function(e) {
   let score;
   if (e.data.isStop) {
     clearTimeout(timerTimeOut);
-    const result_str = $("#timer").text();
+    const score_str = $("#timer").text();
     score =
-      parseInt(result_str.substr(0, 2)) * 100 +
-      parseInt(result_str.substr(3, 2));
+      parseInt(score_str.substr(0, 2)) * 100 + parseInt(score_str.substr(3, 2));
   } else {
     $("#timer").text("--:--");
     score = INF;
@@ -121,36 +174,118 @@ const stopTimer = function(e) {
   $("#table-thead").text("");
   $("#table-tbody").text("");
 
+  postScore(score);
+};
+
+const postRandomScore = function() {
   $.ajax({
     url: "http://localhost:5000/result",
     type: "POST",
     data: {
-      userName: $("#user-name").text(),
-      gameId: $("#value-game-id").text(),
+      userName: userName,
+      gameId: gameId,
+      score: randomScore
+    }
+  }).done(() => {
+    joinGame();
+  });
+};
+
+const postScore = function(score) {
+  $.ajax({
+    url: "http://localhost:5000/result",
+    type: "POST",
+    data: {
+      userName: userName,
+      gameId: gameId,
       score: score
     }
-  })
-    .done(data => {
+  }).done(() => {
+    if (isAuto == true) {
+      joinGame();
+    } else {
       $("#table-thead").append(
         "<tr><th scope='col'>#</th><th scope='col'>user</th><th scope='col'>score</th></tr>"
       );
-      let tbody;
-      data["players"].forEach((row, index) => {
-        tbody +=
-          "<tr><th scope='row'>" +
-          String(parseInt(index) + 1) +
-          "</th > <td>" +
-          row["user_name"] +
-          "</td><td>" +
-          row["score"] +
-          "</td></tr>";
-      });
-      $("#table-tbody").append(tbody);
-    })
-    .fail(() => {
-      $("#message").text("Fail");
-    })
-    .always(data => {
-      console.log(data);
+      getResults();
+    }
+  });
+};
+
+const getResults = function() {
+  $.ajax({
+    url: "http://localhost:5000/result",
+    type: "GET",
+    data: {
+      gameId: gameId
+    }
+  }).done(data => {
+    let tbody;
+    data["players"].forEach((row, index) => {
+      tbody +=
+        "<tr><th scope='row'>" +
+        String(parseInt(index) + 1) +
+        "</th > <td>" +
+        row["user_name"] +
+        "</td><td>" +
+        parseScore(row["score"]) +
+        "</td></tr>";
     });
+    $("#table-tbody").text("");
+    $("#table-tbody").append(tbody);
+
+    if (data["players"].length < fetchedPlayers.length) {
+      setTimeout(getResults, 1000);
+    }
+  });
+};
+
+const parseScore = function(score) {
+  if (score == INF) return "--:--";
+  const sec_str = zeroPadding(Math.floor(score / 100), 2);
+  const ms_str = zeroPadding(score % 100, 2);
+  return sec_str + ":" + ms_str;
+};
+
+const zeroPadding = function(num, length) {
+  return ("0000000" + num).slice(-length);
+};
+
+const gaussian = function(mean, stdev) {
+  var y2;
+  var use_last = false;
+  return () => {
+    var y1;
+    if (use_last) {
+      y1 = y2;
+      use_last = false;
+    } else {
+      var x1, x2, w;
+      do {
+        x1 = 2.0 * Math.random() - 1.0;
+        x2 = 2.0 * Math.random() - 1.0;
+        w = x1 * x1 + x2 * x2;
+      } while (w >= 1.0);
+      w = Math.sqrt((-2.0 * Math.log(w)) / w);
+      y1 = x1 * w;
+      y2 = x2 * w;
+      use_last = true;
+    }
+
+    const val = mean + stdev * y1;
+    if (val >= 0) {
+      return val;
+    } else {
+      return 0;
+    }
+  };
+};
+
+const getRemainTime = function(endTime) {
+  const nowTime = new Date();
+  const diff = endTime - nowTime;
+  const times = 24 * 60 * 60 * 1000;
+  const sec = (Math.floor((diff % times) / 1000) % 60) % 60;
+  const ms = Math.floor((diff % times) / 10) % 100;
+  return { time: diff, sec: sec, ms: ms };
 };
