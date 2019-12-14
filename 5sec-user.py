@@ -1,16 +1,11 @@
 import time
 import datetime
 from flask import Flask, render_template, send_from_directory
-import configparser
 import sys
 import os
-import requests
 import json
 
 args = sys.argv
-# config = configparser.ConfigParser()
-# config.read("config.ini")
-
 DEBUG = False
 SERVER_NAME = "localhost:" + str(5000 + int(sys.argv[1]))
 user_name = "user " + sys.argv[1]
