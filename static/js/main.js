@@ -92,8 +92,11 @@ const getPlayers = function() {
     let tbody;
     res.players.forEach((row, index) => {
       if (fetchedPlayers.includes(row["user_name"]) == false) {
+        row["user_name"] == userName
+          ? (tbody += "<tr class='bg-primary'>")
+          : (tbody += "<tr>");
         tbody +=
-          "<tr><th scope='row'>" +
+          "<th scope='row'>" +
           String(parseInt(index) + 1) +
           "</th><td>" +
           row["user_name"] +
@@ -218,8 +221,11 @@ const getResults = function() {
   }).done(data => {
     let tbody;
     data["players"].forEach((row, index) => {
+      row["user_name"] == userName
+        ? (tbody += "<tr class='bg-primary'>")
+        : (tbody += "<tr>");
       tbody +=
-        "<tr><th scope='row'>" +
+        "<th scope='row'>" +
         String(parseInt(index) + 1) +
         "</th > <td>" +
         row["user_name"] +
