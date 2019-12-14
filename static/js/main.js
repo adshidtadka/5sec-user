@@ -27,7 +27,7 @@ $(function() {
 
 const joinGame = function() {
   $.ajax({
-    url: "http://localhost:5000/game",
+    url: "http://localhost:4001/game",
     type: "GET"
   }).done(res => {
     if (res.game.id == null) {
@@ -53,7 +53,7 @@ const generateRandomScore = function() {
 
 const createGame = function() {
   $.ajax({
-    url: "http://localhost:5000/game",
+    url: "http://localhost:4001/game",
     type: "POST"
   }).done(res => {
     endLoadingTime = new Date(res.game.start_time);
@@ -64,7 +64,7 @@ const createGame = function() {
 
 const createPlayer = function() {
   $.ajax({
-    url: "http://localhost:5000/player",
+    url: "http://localhost:4001/player",
     type: "POST",
     data: {
       userName: userName,
@@ -83,7 +83,7 @@ const createPlayer = function() {
 
 const getPlayers = function() {
   $.ajax({
-    url: "http://localhost:5000/player",
+    url: "http://localhost:4001/player",
     type: "GET",
     data: {
       gameId: gameId
@@ -178,7 +178,7 @@ const stopTimer = function(e) {
 
 const postRandomScore = function() {
   $.ajax({
-    url: "http://localhost:5000/result",
+    url: "http://localhost:4001/result",
     type: "POST",
     data: {
       userName: userName,
@@ -192,7 +192,7 @@ const postRandomScore = function() {
 
 const postScore = function(score) {
   $.ajax({
-    url: "http://localhost:5000/result",
+    url: "http://localhost:4001/result",
     type: "POST",
     data: {
       userName: userName,
@@ -213,7 +213,7 @@ const postScore = function(score) {
 
 const getResults = function() {
   $.ajax({
-    url: "http://localhost:5000/result",
+    url: "http://localhost:4001/result",
     type: "GET",
     data: {
       gameId: gameId
