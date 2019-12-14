@@ -8,7 +8,7 @@ import json
 args = sys.argv
 DEBUG = False
 SERVER_NAME = "localhost:" + str(5000 + int(sys.argv[1]))
-user_name = "user " + sys.argv[1]
+user_name = "user_" + sys.argv[1]
 
 app = Flask(__name__)
 app.config.from_object(__name__)

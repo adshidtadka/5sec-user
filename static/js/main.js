@@ -7,6 +7,7 @@ let gameId;
 let endLoadingTime, endTimerTime;
 let timerTimeOut, getPlayersTimeOut;
 let fetchedPlayers;
+let serverUrl = "http://localhost:4001";
 
 $(function() {
   if ($("#value-is-auto").text() == "True") {
@@ -25,9 +26,22 @@ $(function() {
   }
 });
 
-const joinGame = function() {
+const getServerUrl = function() {
   $.ajax({
-    url: "http://localhost:4001/game",
+    url: serverUrl + "/server_url",
+    type: "GET",
+    data: {
+      userName: userName
+    }
+  }).done(res => {
+    serverUrl = "http://" + res.server_url;
+  });
+};
+
+const joinGame = function() {
+  getServerUrl();
+  $.ajax({
+    url: serverUrl + "/game",
     type: "GET"
   }).done(res => {
     if (res.game.id == null) {
@@ -52,8 +66,9 @@ const generateRandomScore = function() {
 };
 
 const createGame = function() {
+  getServerUrl();
   $.ajax({
-    url: "http://localhost:4001/game",
+    url: serverUrl + "/game",
     type: "POST"
   }).done(res => {
     endLoadingTime = new Date(res.game.start_time);
@@ -64,7 +79,7 @@ const createGame = function() {
 
 const createPlayer = function() {
   $.ajax({
-    url: "http://localhost:4001/player",
+    url: serverUrl + "/player",
     type: "POST",
     data: {
       userName: userName,
@@ -83,7 +98,7 @@ const createPlayer = function() {
 
 const getPlayers = function() {
   $.ajax({
-    url: "http://localhost:4001/player",
+    url: serverUrl + "/player",
     type: "GET",
     data: {
       gameId: gameId
@@ -178,7 +193,7 @@ const stopTimer = function(e) {
 
 const postRandomScore = function() {
   $.ajax({
-    url: "http://localhost:4001/result",
+    url: serverUrl + "/result",
     type: "POST",
     data: {
       userName: userName,
@@ -192,7 +207,7 @@ const postRandomScore = function() {
 
 const postScore = function(score) {
   $.ajax({
-    url: "http://localhost:4001/result",
+    url: serverUrl + "/result",
     type: "POST",
     data: {
       userName: userName,
@@ -213,7 +228,7 @@ const postScore = function(score) {
 
 const getResults = function() {
   $.ajax({
-    url: "http://localhost:4001/result",
+    url: serverUrl + "/result",
     type: "GET",
     data: {
       gameId: gameId
